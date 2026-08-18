@@ -397,3 +397,67 @@ struct TabHeader: View {
         }
     }
 }
+
+// MARK: - Search field
+
+/// A bordered search field. The navigation bar is hidden on every tab, so
+/// SwiftUI's stock `.searchable` has nowhere to draw; this keeps the look of
+/// the rest of the page.
+struct SearchField: View {
+    @Binding var text: String
+    let prompt: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Ink.mute)
+
+            TextField(prompt, text: $text)
+                .font(Typo.body(14))
+                .foregroundStyle(Ink.ink)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+
+            if !text.isEmpty {
+                Button {
+                    withAnimation(.easeOut(duration: 0.18)) { text = "" }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Ink.mute)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .background(Ink.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .strokeBorder(Ink.line, lineWidth: 1)
+        }
+    }
+}
+
+// MARK: - Empty note
+
+/// The muted placeholder shown when a list or search has no results.
+struct EmptyNote: View {
+    let text: String
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "questionmark.square.dashed")
+                .font(.system(size: 22, weight: .light))
+                .foregroundStyle(Ink.mute)
+            Text(text)
+                .font(Typo.body(13))
+                .foregroundStyle(Ink.mute)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
